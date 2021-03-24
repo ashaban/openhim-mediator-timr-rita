@@ -1,0 +1,43 @@
+{
+  "name": "openhim-mediator-timr-rita",
+  "version": "1.0.0",
+  "description": "Data Synchronization between Tanzania Immunization Registry and RITA",
+  "main": "start.js",
+  "dependencies": {
+    "async": "^2.4.1",
+    "body-parser": "^1.17.2",
+    "express": "^4.14.0",
+    "forever": "^0.15.3",
+    "forever-monitor": "^1.7.1",
+    "http": "^0.0.0",
+    "https": "^1.0.0",
+    "is-json": "^2.0.1",
+    "moment": "^2.18.1",
+    "mongodb": "^3.6.2",
+    "nodemailer": "^4.1.3",
+    "openhim-mediator-utils": "^0.2.2",
+    "pg": "^7.11.0",
+    "request": "^2.87.0",
+    "urijs": "^1.18.2",
+    "winston": "^3.3.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openhie/openhim-mediator-timr-vims-tz.git"
+  },
+  "keywords": [
+    "timr",
+    "vaccine",
+    "mediator",
+    "openhim"
+  ],
+  "author": "Ally Shaban",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/openhie/openhim-mediator-timr-rita/issues"
+  },
+  "homepage": "https://github.com/openhie/openhim-mediator-timr-rita#readme"
+}

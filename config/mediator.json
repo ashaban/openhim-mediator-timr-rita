@@ -1,0 +1,198 @@
+{
+  "urn": "urn:uuid:7078b8b7-16b9-48cd-b8ad-38be64733d99",
+  "version": "0.0.1",
+  "name": "TImR-RITA Trigger",
+  "description": "This mediator synchronises data between TImR and RITA",
+  "defaultChannelConfig": [
+    {
+      "urlPattern": "/Person",
+      "name": "Get Person Information",
+      "autoRetryPeriodMinutes": 60,
+      "autoRetryEnabled": false,
+      "rewriteUrlsConfig": [],
+      "addAutoRewriteRules": true,
+      "rewriteUrls": false,
+      "status": "enabled",
+      "alerts": [],
+      "txRerunAcl": [],
+      "txViewFullAcl": [],
+      "txViewAcl": [],
+      "properties": [],
+      "matchContentTypes": [],
+      "routes": [
+        {
+          "name": "Activate Get Person Information",
+          "secured": false,
+          "host": "localhost",
+          "port": 9000,
+          "path": "/Person",
+          "primary": true,
+          "username": "",
+          "password": "",
+          "forwardAuthHeader": false,
+          "status": "enabled",
+          "type": "http"
+        }
+      ],
+      "authType": "private",
+      "whitelist": [],
+      "allow": [
+        "il_rita"
+      ],
+      "type": "http"
+    }
+    ],
+    "endpoints": [
+      {
+        "name": "Activate TImR and VIMS Sync",
+        "host": "localhost",
+        "path": "/sync",
+        "port": "8545",
+        "primary": true,
+        "type": "http"
+      }
+    ],
+  "configDefs": [
+    {
+      "param": "oauth2",
+      "displayName": "TImR OAUTH2",
+      "description": "The Open Authentication that generates access token to access TImR server",
+      "type": "struct",
+      "template": [
+        {
+          "param": "url",
+          "displayName": "URL",
+          "description": "The base URL (e.g. http://timr.marc-hi.ca:8080/auth/oauth2_token)",
+          "type": "string"
+        },
+        {
+          "param": "fhirScope",
+          "displayName": "FHIR Scope",
+          "description": "The base URL (e.g. http://timr.marc-hi.ca:8080/fhir)",
+          "type": "string"
+        },
+        {
+          "param": "username",
+          "displayName": "Username",
+          "description": "Username required to generate access token",
+          "type": "string"
+        },
+        {
+          "param": "password",
+          "displayName": "Password",
+          "description": "Password required to generate access token",
+          "type": "password"
+        }
+      ]
+    },
+    {
+      "param": "timr",
+      "displayName": "TImR",
+      "description": "The Immunization server to sync data with",
+      "type": "struct",
+      "template": [
+        {
+          "param": "url",
+          "displayName": "URL",
+          "description": "The base URL (e.g. https://vimstraining.elmis-dev.org)",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "param": "rita",
+      "displayName": "RITA",
+      "description": "The RITA server to send data to",
+      "type": "struct",
+      "template": [
+        {
+          "param": "url",
+          "displayName": "URL",
+          "description": "The base URL (e.g. https://rita.go.tz)",
+          "type": "string"
+        },
+        {
+          "param": "username",
+          "displayName": "Username",
+          "description": "Username required to send data to RITA",
+          "type": "string"
+        },
+        {
+          "param": "password",
+          "displayName": "Password",
+          "description": "Password required to send data to RITA",
+          "type": "password"
+        }
+      ]
+    },
+    {
+      "param": "email_notification",
+      "displayName": "Email Notification",
+      "description": "Email Notification",
+      "type": "struct",
+      "template": [
+        {
+          "param": "emails",
+          "displayName": "Emails",
+          "description": "Emails to send notifications as events happens inside the mediator like restart etc",
+          "type": "map"
+        },
+        {
+          "param": "smtp_host",
+          "displayName": "SMTP Host",
+          "description": "SMTP Host like like smtp.gmail.com",
+          "type": "string"
+        },
+        {
+          "param": "smtp_port",
+          "displayName": "SMTP Port",
+          "description": "SMTP Port like 587 (non secured) or 465 (secured)",
+          "type": "string"
+        },
+        {
+          "param": "smtp_secured",
+          "displayName": "SMTP Secured?",
+          "description": "SMTP Secured",
+          "type": "option",
+          "values": ["Yes","No"]
+        },
+        {
+          "param": "username",
+          "displayName": "Authentication User",
+          "description": "Authentication User",
+          "type": "string"
+        },
+        {
+          "param": "password",
+          "displayName": "Authentication Password",
+          "description": "Authentication Password",
+          "type": "password"
+        }
+      ]
+    }
+  ],
+  "config": {
+    "oauth2": {
+      "url": "http://timr.marc-hi.ca:8080/auth/oauth2_token",
+      "fhirScope": "http://timr.marc-hi.ca:8080/fhir",
+      "username": "il_mediator",
+      "password": "@MediatorSource123"
+    },
+    "timr": {
+      "url": "http://timr.marc-hi.ca:8080/"
+    },
+    "rita": {
+      "url": "https://rita.go.tz",
+      "username": "username",
+      "password": "password"
+    },
+    "email_notification": {
+      "emails": {
+        "1":"allyshaban5@gmail.com"
+      },
+      "smtp_host":"smtp.gmail.com",
+      "smtp_port":"587",
+      "smtp_secured":"No"
+    }
+  }
+}
