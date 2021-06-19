@@ -12,8 +12,8 @@ const isJSON = require('is-json');
 const SENDEMAIL = require('./send_email');
 const send_email = SENDEMAIL();
 const URI = require('urijs');
-const middleware = require('./middleware');
 const TImR = require('./timr')
+const FHIR = require('./fhir')
 const bodyParser = require('body-parser');
 
 const port = 9001;
@@ -108,6 +108,7 @@ function setupApp() {
 
   app.get('/Patient', (req, res) => {
     const timr = TImR(config.timr, config.oauth2)
+    const fhir = FHIR(config.fhir)
     logger.info("Received a request to get Person records")
     let orchestrations = []
     timr.getAccessToken(orchestrations, (error, response, body) => {
@@ -116,7 +117,7 @@ function setupApp() {
       }
       let _lastUpdated = req.query._lastUpdated
       let access_token = body.access_token
-      timr.getPatients(_lastUpdated, access_token, orchestrations, (error, resp, body) => {
+      timr.getPatients(_lastUpdated, access_token, orchestrations, async(error, resp, body) => {
         let ritaPatients = []
         if(!body.entry) {
           return res.json(ritaPatients)
@@ -143,14 +144,26 @@ function setupApp() {
               if(ext.valueReference && ext.valueReference.reference) {
                 let facId = ext.valueReference.reference.split('/_history')[0]
                 facId = facId.split('Location/')[1]
-                ritaPatient.health_facility_id = facId
+                await fhir.getRITALocationId(facId, orchestrations).then((ritaFacId) => {
+                  if(ritaFacId) {
+                    ritaPatient.health_facility_id = ritaFacId
+                  }
+                }).catch((err) => {
+                  logger.error(err);
+                })
               }
             }
             if(ext.url === 'http://openiz.org/fhir/extension/rim/relationship/Birthplace') {
               if(ext.valueReference && ext.valueReference.reference) {
                 let vilId = ext.valueReference.reference.split('/_history')[0]
                 vilId = vilId.split('Location/')[1]
-                ritaPatient.child_birth_place_village_id = vilId
+                await fhir.getRITALocationId(vilId, orchestrations).then((ritaVilId) => {
+                  if(ritaVilId) {
+                    ritaPatient.child_birth_place_village_id = ritaVilId
+                  }
+                }).catch((err) => {
+                  logger.error(err);
+                })
               }
             }
             if(ext.url === 'http://openiz.org/extensions/contrib/timr/birthAttendant') {
@@ -179,14 +192,20 @@ function setupApp() {
                 ritaPatient.mother_national_identity_number = ident.value
               }
               if(motherResource.birthDate) {
-                ritaPatient.mother_date_of_birth = motherResource,birthDate
+                ritaPatient.mother_date_of_birth = motherResource.birthDate
               }
               for(let ext of motherResource.extension) {
                 if(ext.url === 'http://openiz.org/fhir/extension/rim/relationship/Birthplace') {
                   if(ext.valueReference && ext.valueReference.reference) {
                     let countryId = ext.valueReference.reference.split('/_history')[0]
                     countryId = countryId.split('Location/')[1]
-                    ritaPatient.mother_country_birth_id = countryId
+                    await fhir.getRITALocationId(countryId, orchestrations).then((ritaCountryId) => {
+                      if(ritaCountryId) {
+                        ritaPatient.mother_country_birth_id = ritaCountryId
+                      }
+                    }).catch((err) => {
+                      logger.error(err);
+                    })
                   }
                 }
                 if(ext.url === 'http://openiz.org/fhir/extension/rim/relationship/Citizen' && ext.valueCode) {
