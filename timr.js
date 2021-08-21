@@ -7,7 +7,6 @@ module.exports = function (timrcnf, oauthcnf) {
   const oauthconfig = oauthcnf
   return {
     getAccessToken: function (orchestrations, callback) {
-      console.log(oauthconfig.password);
       let url = URI(oauthconfig.url)
       let before = new Date()
       var auth = "Basic " + Buffer.from(oauthconfig.client_id + ":" + oauthconfig.client_secret).toString("base64");
@@ -20,7 +19,7 @@ module.exports = function (timrcnf, oauthcnf) {
       }
       request.post(options, (err, res, body) => {
         if (err) {
-          winston.error(err)
+          logger.error(err)
           return callback(err)
         }
         orchestrations.push(utils.buildOrchestration('Getting Access Token From TImR', before, 'POST', url.toString(), options.body, res, body))

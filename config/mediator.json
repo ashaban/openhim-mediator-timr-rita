@@ -94,7 +94,7 @@
           "displayName": "Client Secret",
           "description": "Client Secret required to generate access token",
           "type": "string"
-        },
+        }
       ]
     },
     {
