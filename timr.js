@@ -10,13 +10,13 @@ module.exports = function (timrcnf, oauthcnf) {
       console.log(oauthconfig.password);
       let url = URI(oauthconfig.url)
       let before = new Date()
-      var auth = "Basic " + Buffer.from(oauthconfig.username + ":" + oauthconfig.password).toString("base64");
+      var auth = "Basic " + Buffer.from(oauthconfig.client_id + ":" + oauthconfig.client_secret).toString("base64");
       var options = {
         url: url.toString(),
         headers: {
           Authorization: auth
         },
-        body: `grant_type=password&username=jrichard&password=Doriet123&scope=${oauthconfig.fhirScope}`
+        body: `grant_type=password&username=${oauthconfig.username}&password=${oauthconfig.password}&scope=${oauthconfig.fhirScope}`
       }
       request.post(options, (err, res, body) => {
         if (err) {

@@ -82,7 +82,19 @@
           "displayName": "Password",
           "description": "Password required to generate access token",
           "type": "password"
-        }
+        },
+        {
+          "param": "client_id",
+          "displayName": "Client ID",
+          "description": "Client ID required to generate access token",
+          "type": "string"
+        },
+        {
+          "param": "client_secret",
+          "displayName": "Client Secret",
+          "description": "Client Secret required to generate access token",
+          "type": "string"
+        },
       ]
     },
     {
@@ -202,7 +214,9 @@
       "url": "http://timr.marc-hi.ca:8080/auth/oauth2_token",
       "fhirScope": "http://timr.marc-hi.ca:8080/fhir",
       "username": "il_mediator",
-      "password": "@MediatorSource123"
+      "password": "@MediatorSource123",
+      "client_id": "il_mediator",
+      "client_secret": "@MediatorSource123"
     },
     "timr": {
       "url": "http://timr.marc-hi.ca:8080/"
