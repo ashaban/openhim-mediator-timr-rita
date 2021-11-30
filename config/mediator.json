@@ -134,6 +134,18 @@
           "displayName": "Password",
           "description": "Password required to send data to RITA",
           "type": "password"
+        },
+        {
+          "param": "last_sync",
+          "displayName": "Last Sync",
+          "description": "Only Data that were updated after this time will be synced (format 2017-09-10T19:28:56)",
+          "type": "string"
+        },
+        {
+          "param": "reset",
+          "displayName": "Reset Last Sync",
+          "description": "If set to yes then all data will be sync,ignoring last updated",
+          "type": "bool"
         }
       ]
     },
