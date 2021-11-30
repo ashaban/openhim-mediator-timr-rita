@@ -236,7 +236,9 @@
     "rita": {
       "url": "https://rita.go.tz",
       "username": "username",
-      "password": "password"
+      "password": "password",
+      "last_sync": "1970-01-01T00:00:00",
+      "reset": false
     },
     "fhir": {
       "baseURL": "http://localhost:8081/hapi/fhir",
