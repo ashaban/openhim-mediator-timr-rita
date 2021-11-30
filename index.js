@@ -9,6 +9,7 @@ const request = require('request');
 const nconf = require('nconf')
 const async = require('async')
 const fs = require('fs')
+const moment = require('moment')
 const timr = require('./timr')
 const fhir = require('./fhir')
 const OpenHIM = require('./openhim')
@@ -121,10 +122,10 @@ function setupApp() {
       }
     }
     let query = {
-      _lastUpdated: config.rita.last_sync
+      _lastUpdated: 'ge' + config.rita.last_sync
     }
     if(config.rita.reset) {
-      query._lastUpdated = '1970-01-01T00:00:00'
+      query._lastUpdated = 'ge1970-01-01T00:00:00'
     }
     let orchestrations = []
     let nextURL = false
@@ -141,9 +142,7 @@ function setupApp() {
           let access_token = body.access_token
           timr.getPatients(query, access_token, orchestrations, async(error, resp, body) => {
             if(!body.entry) {
-              return res.json({
-                entry: []
-              })
+              return callback(null)
             }
             if(error) {
               return res.status(500).send(error)
@@ -173,7 +172,7 @@ function setupApp() {
         config.rita.last_sync = lastSync
         config.rita.reset = false
         openhim.updateConfig(mediatorConfig.urn, config, (res) => {
-          winston.info("Done Updating Last Sync")
+          logger.info("Done Updating Last Sync")
         })
         logger.info('Done')
         updateTransaction(req, "", "Successful", "200", orchestrations)
