@@ -140,7 +140,7 @@ function setupApp() {
             return res.status(500).send()
           }
           let access_token = body.access_token
-          timr.getPatients(query, access_token, orchestrations, async(error, resp, body) => {
+          timr.getData(query, 'Patient', access_token, orchestrations).then(async({error, resp, body}) => {
             if(!body.entry) {
               return callback(null)
             }
@@ -189,7 +189,7 @@ function setupApp() {
         return res.status(500).send()
       }
       let access_token = body.access_token
-      timr.getPatients(req.query, access_token, orchestrations, async(error, resp, body) => {
+      timr.getData(req.query, 'Patient', access_token, orchestrations).then(async({error, resp, body}) => {
         if(!body.entry) {
           return res.json({
             entry: []

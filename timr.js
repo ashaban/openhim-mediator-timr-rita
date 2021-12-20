@@ -30,29 +30,31 @@ module.exports = {
       callback(err, res, body)
     })
   },
-  getPatients: (query, access_token, orchestrations, callback) => {
-    let url = URI(nconf.get("timr:url")).segment('Patient').addQuery('_format', 'json')
-    if (query) {
-      for (let index in query) {
-        url = url.addQuery(index, query[index])
+  getData: (query, resource, access_token, orchestrations, callback) => {
+    return new Promise((resolve, reject) => {
+      let url = URI(nconf.get("timr:url")).segment(resource).addQuery('_format', 'json')
+      if (query) {
+        for (let index in query) {
+          url = url.addQuery(index, query[index])
+        }
       }
-    }
-    let options = {
-      url: url.toString(),
-      headers: {
-        Authorization: `BEARER ${access_token}`
+      let options = {
+        url: url.toString(),
+        headers: {
+          Authorization: `BEARER ${access_token}`
+        }
       }
-    }
-    let before = new Date()
-    request.get(options, (err, res, body) => {
-      try {
-        body = JSON.parse(body)
-      } catch (error) {
-        logger.error(error)
-        return callback(error)
-      }
-      orchestrations.push(utils.buildOrchestration('Getting Patients Data', before, 'GET', nconf.get("timr:url").toString(), JSON.stringify(options.headers), res, body))
-      return callback(err, res, body)
+      let before = new Date()
+      request.get(options, (err, res, body) => {
+        try {
+          body = JSON.parse(body)
+        } catch (error) {
+          logger.error(error)
+          return reject(error)
+        }
+        orchestrations.push(utils.buildOrchestration(`Getting ${resource} Data`, before, 'GET', nconf.get("timr:url").toString(), JSON.stringify(options.headers), res, body))
+        return resolve({err, res, body})
+      })
     })
   }
 }

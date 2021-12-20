@@ -4,6 +4,7 @@ const axios = require('axios')
 const nconf = require('nconf')
 const logger = require('./winston')
 const utils = require('./utils')
+const timr = require('./timr')
 
 const getRITALocationId = (uuid, orchestrations) => {
   return new Promise((resolve, reject) => {
@@ -84,6 +85,7 @@ module.exports = {
           mother_nationality_id: '',
           mother_education_id: '',
           mother_occupation_id: '',
+          mother_village_id: "",
           father_education_id: '',
           father_occupation_id: '',
           father_nationality_id: '',
@@ -93,6 +95,7 @@ module.exports = {
           father_last_name: '',
           father_date_of_birth: '',
           father_national_identity_number: '',
+          father_village_id: '',
           number_of_pregnancy: '',
           number_of_children: '',
           number_of_children_safe_delivery: '',
@@ -101,8 +104,10 @@ module.exports = {
           informant_first_name: '',
           informant_second_name: '',
           informant_last_name: '',
+          informant_phone_number: '',
           informant_national_identity_number: '',
           informant_relationship_id: '',
+          informant_permanent_residence_village_id: '',
           date_of_informant: '',
           registration_centre_id: '',
           register_date: '',
@@ -197,6 +202,46 @@ module.exports = {
             }
             if (motherResource.birthDate) {
               ritaPatient.mother_date_of_birth = motherResource.birthDate
+            }
+            if(motherResource.address && motherResource.address.length > 0) {
+              let addressId
+              for(let address of motherResource.address) {
+                let villExt = address.extension.find((ext) => {
+                  return ext.url === "http://openiz.org/fhir/profile#address-CensusTract"
+                })
+                if(villExt) {
+                  addressId = villExt.valueString
+                  break
+                }
+              }
+              if(addressId) {
+                await timr.getAccessToken(orchestrations, async(error, response, body) => {
+                  if(!error || body.access_token) {
+                    let access_token = body.access_token
+                    await timr.getData("", `Location/${addressId}`, access_token, orchestrations).then(async({error, resp, body}) => {
+                      if(body.resourceType) {
+                        let fhirVillId = body.identifier && body.identifier.find((id) => {
+                          return id.system === "http://hfrportal.ehealth.go.tz/"
+                        })
+                        if(fhirVillId) {
+                          await getRITALocationId(fhirVillId.value, orchestrations).then((ritaVilId) => {
+                            if (ritaVilId) {
+                              ritaPatient.mother_village_id = ritaVilId
+                            }
+                          }).catch((err) => {
+                            logger.error(err);
+                          })
+                        }
+                      }
+                    }).catch((err) => {
+                      logger.error(err);
+                    })
+                  } else {
+                    logger.error(error)
+                    logger.error('Unable to get access token from TImR')
+                  }
+                })
+              }
             }
             if (Array.isArray(motherResource.extension)) {
               for (let ext of motherResource.extension) {
@@ -305,6 +350,46 @@ module.exports = {
             if (fatherResource.birthDate) {
               ritaPatient.father_date_of_birth = fatherResource.birthDate
             }
+            if(fatherResource.address && fatherResource.address.length > 0) {
+              let addressId
+              for(let address of fatherResource.address) {
+                let villExt = address.extension.find((ext) => {
+                  return ext.url === "http://openiz.org/fhir/profile#address-CensusTract"
+                })
+                if(villExt) {
+                  addressId = villExt.valueString
+                  break
+                }
+              }
+              if(addressId) {
+                await timr.getAccessToken(orchestrations, async(error, response, body) => {
+                  if(!error || body.access_token) {
+                    let access_token = body.access_token
+                    await timr.getData("", `Location/${addressId}`, access_token, orchestrations).then(async({error, resp, body}) => {
+                      if(body.resourceType) {
+                        let fhirVillId = body.identifier && body.identifier.find((id) => {
+                          return id.system === "http://hfrportal.ehealth.go.tz/"
+                        })
+                        if(fhirVillId) {
+                          await getRITALocationId(fhirVillId.value, orchestrations).then((ritaVilId) => {
+                            if (ritaVilId) {
+                              ritaPatient.father_village_id = ritaVilId
+                            }
+                          }).catch((err) => {
+                            logger.error(err);
+                          })
+                        }
+                      }
+                    }).catch((err) => {
+                      logger.error(err);
+                    })
+                  } else {
+                    logger.error(error)
+                    logger.error('Unable to get access token from TImR')
+                  }
+                })
+              }
+            }
             if (Array.isArray(fatherResource.extension)) {
               for (let ext of fatherResource.extension) {
                 if (ext.url === 'http://openiz.org/fhir/extension/rim/relationship/Birthplace') {
@@ -398,6 +483,46 @@ module.exports = {
               })
               if (phone) {
                 ritaPatient.informant_phone_number = phone
+              }
+            }
+            if(informantResource.address && informantResource.address.length > 0) {
+              let addressId
+              for(let address of informantResource.address) {
+                let villExt = address.extension.find((ext) => {
+                  return ext.url === "http://openiz.org/fhir/profile#address-CensusTract"
+                })
+                if(villExt) {
+                  addressId = villExt.valueString
+                  break
+                }
+              }
+              if(addressId) {
+                await timr.getAccessToken(orchestrations, async(error, response, body) => {
+                  if(!error || body.access_token) {
+                    let access_token = body.access_token
+                    await timr.getData("", `Location/${addressId}`, access_token, orchestrations).then(async({error, resp, body}) => {
+                      if(body.resourceType) {
+                        let fhirVillId = body.identifier && body.identifier.find((id) => {
+                          return id.system === "http://hfrportal.ehealth.go.tz/"
+                        })
+                        if(fhirVillId) {
+                          await getRITALocationId(fhirVillId.value, orchestrations).then((ritaVilId) => {
+                            if (ritaVilId) {
+                              ritaPatient.informant_permanent_residence_village_id = ritaVilId
+                            }
+                          }).catch((err) => {
+                            logger.error(err);
+                          })
+                        }
+                      }
+                    }).catch((err) => {
+                      logger.error(err);
+                    })
+                  } else {
+                    logger.error(error)
+                    logger.error('Unable to get access token from TImR')
+                  }
+                })
               }
             }
             ritaPatient.informant_relationship_id = 'Contact'
