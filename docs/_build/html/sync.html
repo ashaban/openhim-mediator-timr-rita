@@ -1,0 +1,341 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Data synchronization - Tabular &#8212; TImR and RITA Sync Mediator  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Data synchronization - List" href="synclist.html" />
+    <link rel="prev" title="Running the mediator and logs location" href="running.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="data-synchronization-tabular">
+<h1>Data synchronization - Tabular<a class="headerlink" href="#data-synchronization-tabular" title="Permalink to this headline">¶</a></h1>
+<p>The mediator comes with a single API that can be triggered to push data to RITA. The name of the API is /pushPatients which supports the POST method. This end point pulls data from TImR using FHIR standard which then it converts these data to RITA format and finally sends the converted data to RITA.</p>
+<section id="below-are-the-data-elements-that-are-currently-being-sent-to-rita">
+<h2><em>Below are the data elements that are currently being sent to RITA</em><a class="headerlink" href="#below-are-the-data-elements-that-are-currently-being-sent-to-rita" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Variables</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<tbody>
+<tr class="row-odd"><td><p>Name</p></td>
+<td><p>Value</p></td>
+</tr>
+<tr class="row-even"><td><p>$mother</p></td>
+<td><p>contained.find(c=&gt;c.resourceType == “RelatedPerson” &amp;&amp; c.relationship.coding[0].code == “MTH”)</p></td>
+</tr>
+<tr class="row-odd"><td><p>$father</p></td>
+<td><p>contained.find(c=&gt;c.resourceType == “RelatedPerson” &amp;&amp; c.relationship.coding[0].code == “FTH”)</p></td>
+</tr>
+<tr class="row-even"><td><p>$informant</p></td>
+<td><p>contained.find(c=&gt;c.resourceType == “RelatedPerson” &amp;&amp; c.relationship.coding[0].code == “Contact”)</p></td>
+</tr>
+<tr class="row-odd"><td><p>$createdBy</p></td>
+<td><p>extension.find(e=&gt;e.url==”<a class="reference external" href="http://openiz.org/fhir/extension/rim/relationship/CreatedBy">http://openiz.org/fhir/extension/rim/relationship/CreatedBy</a>”).valueReference.reference</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">RITA-FHIR Mappings</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<tbody>
+<tr class="row-odd"><td><p>RITA DATA Element</p></td>
+<td><p>RITA Data in FHIR (TImR)</p></td>
+</tr>
+<tr class="row-even"><td><p>form_number</p></td>
+<td><p>identifier.find(id =&gt; id.system == “<a class="reference external" href="http://ivd.moh.go.tz/timr/birthcert">http://ivd.moh.go.tz/timr/birthcert</a>”).value</p></td>
+</tr>
+<tr class="row-odd"><td><p>child_first_name</p></td>
+<td><p>name[0].given[0]</p></td>
+</tr>
+<tr class="row-even"><td><p>child_second_name</p></td>
+<td><p>name[0].given[1]</p></td>
+</tr>
+<tr class="row-odd"><td><p>child_last_name</p></td>
+<td><p>name[0].family</p></td>
+</tr>
+<tr class="row-even"><td><p>gender</p></td>
+<td><p>gender</p></td>
+</tr>
+<tr class="row-odd"><td><p>child_date_of_birth</p></td>
+<td><p>birthDate</p></td>
+</tr>
+<tr class="row-even"><td><p>birth_place_id</p></td>
+<td><p>extension.find(<br>
+e =&gt; e.url == “<a class="reference external" href="http://openiz.org/extensions/patient/contrib/timr/birthPlaceType">http://openiz.org/extensions/patient/contrib/timr/birthPlaceType</a>”<br>
+).valueDecimal</p></td>
+</tr>
+<tr class="row-odd"><td><p>health_facility_id</p></td>
+<td><p>extension.find(<br>
+e =&gt; e.url==”<a class="reference external" href="http://openiz.org/fhir/extension/rim/relationship/DedicatedFacilty">http://openiz.org/fhir/extension/rim/relationship/DedicatedFacilty</a>”<br>
+).valueIdentifier.value</p></td>
+</tr>
+<tr class="row-even"><td><p>child_birth_place_village_id</p></td>
+<td><p>extension.find(<br>
+e =&gt; e.url == “<a class="reference external" href="http://openiz.org/fhir/extension/rim/relationship/Birthplace">http://openiz.org/fhir/extension/rim/relationship/Birthplace</a>”<br>
+).valueIdentifier.value</p></td>
+</tr>
+<tr class="row-odd"><td><p>delivery_witness_id</p></td>
+<td><p>extension.find(<br>
+e =&gt; e.url == “<a class="reference external" href="http://openiz.org/extensions/contrib/timr/birthAttendant">http://openiz.org/extensions/contrib/timr/birthAttendant</a>”<br>
+).valueDecimal</p></td>
+</tr>
+<tr class="row-even"><td><p>mother_first_name</p></td>
+<td><p>$mother.name[0].given[0]</p></td>
+</tr>
+<tr class="row-odd"><td><p>mother_second_name</p></td>
+<td><p>$mother.name[0].given[1]</p></td>
+</tr>
+<tr class="row-even"><td><p>mother_last_name</p></td>
+<td><p>$mother.name[0].family</p></td>
+</tr>
+<tr class="row-odd"><td><p>mother_national_identity_number</p></td>
+<td><p>$mother.identifier.find(<br>
+id =&gt; id.system == “<a class="reference external" href="http://ivd.moh.go.tz/timr/nid">http://ivd.moh.go.tz/timr/nid</a>”<br>
+).value</p></td>
+</tr>
+<tr class="row-even"><td><p>mother_date_of_birth</p></td>
+<td><p>$mother.birthDate</p></td>
+</tr>
+<tr class="row-odd"><td><p>mother_country_birth_id</p></td>
+<td><p>$mother.extension.find(<br>
+e =&gt; e.url == “<a class="reference external" href="http://openiz.org/fhir/extension/rim/relationship/Birthplace">http://openiz.org/fhir/extension/rim/relationship/Birthplace</a>”<br>
+).valueIdentifier.value</p></td>
+</tr>
+<tr class="row-even"><td><p>mother_nationality_id</p></td>
+<td><p>$mother.extension.find(<br>
+e =&gt; e.url == “<a class="reference external" href="http://openiz.org/fhir/extension/rim/relationship/Citizen">http://openiz.org/fhir/extension/rim/relationship/Citizen</a>”<br>
+).valueCode</p></td>
+</tr>
+<tr class="row-odd"><td><p>mother_education_id</p></td>
+<td><p>$mother.extension.find(<br>
+e=&gt;e.url==”<a class="reference external" href="http://openiz.org/extensions/contrib/timr/socialIndicators/education">http://openiz.org/extensions/contrib/timr/socialIndicators/education</a>”<br>
+).valueCodeableConcept.coding[0].code</p></td>
+</tr>
+<tr class="row-even"><td><p>mother_occupation_id</p></td>
+<td><p>$mother.extension.find(<br>
+e=&gt;e.url==”<a class="reference external" href="http://openiz.org/extensions/contrib/timr/socialIndicators/occupation">http://openiz.org/extensions/contrib/timr/socialIndicators/occupation</a>”<br>
+).valueCodeableConcept.coding[0].code</p></td>
+</tr>
+<tr class="row-odd"><td><p>mother_village_id</p></td>
+<td><p>$mother.address.find(<br>
+addr =&gt; addr.extension.find(e=&gt;e.url==”<a class="reference external" href="http://openiz.org/fhir/profile#address-CensusTract">http://openiz.org/fhir/profile#address-CensusTract</a>”<br>
+).valueString)</p></td>
+</tr>
+<tr class="row-even"><td><p>father_education_id</p></td>
+<td><p>$father.extension.find(<br>
+e=&gt;e.url==”<a class="reference external" href="http://openiz.org/extensions/contrib/timr/socialIndicators/education">http://openiz.org/extensions/contrib/timr/socialIndicators/education</a>”<br>
+).valueCodeableConcept.coding[0].code</p></td>
+</tr>
+<tr class="row-odd"><td><p>father_occupation_id</p></td>
+<td><p>$father.extension.find(<br>
+e=&gt;e.url==”<a class="reference external" href="http://openiz.org/extensions/contrib/timr/socialIndicators/occupation">http://openiz.org/extensions/contrib/timr/socialIndicators/occupation</a>”<br>
+).valueCodeableConcept.coding[0].code</p></td>
+</tr>
+<tr class="row-even"><td><p>father_nationality_id</p></td>
+<td><p>$father.extension.find(<br>
+e =&gt; e.url == “<a class="reference external" href="http://openiz.org/fhir/extension/rim/relationship/Citizen">http://openiz.org/fhir/extension/rim/relationship/Citizen</a>”<br>
+).valueCode</p></td>
+</tr>
+<tr class="row-odd"><td><p>father_country_birth_id</p></td>
+<td><p>$father.extension.find(<br>
+e =&gt; e.url == “<a class="reference external" href="http://openiz.org/fhir/extension/rim/relationship/Birthplace">http://openiz.org/fhir/extension/rim/relationship/Birthplace</a>”<br>
+).valueIdentifier.value</p></td>
+</tr>
+<tr class="row-even"><td><p>father_first_name</p></td>
+<td><p>$father.name[0].given[0]</p></td>
+</tr>
+<tr class="row-odd"><td><p>father_second_name</p></td>
+<td><p>$father.name[0].given[1]</p></td>
+</tr>
+<tr class="row-even"><td><p>father_last_name</p></td>
+<td><p>$father.name[0].family</p></td>
+</tr>
+<tr class="row-odd"><td><p>father_date_of_birth</p></td>
+<td><p>$father.birthDate</p></td>
+</tr>
+<tr class="row-even"><td><p>father_national_identity_number</p></td>
+<td><p>$father.identifier.find(id =&gt; id.system == “<a class="reference external" href="http://ivd.moh.go.tz/timr/nid">http://ivd.moh.go.tz/timr/nid</a>”).value</p></td>
+</tr>
+<tr class="row-odd"><td><p>father_village_id</p></td>
+<td><p>$father.address.find(<br>
+addr =&gt; addr.extension.find(e=&gt;e.url == “<a class="reference external" href="http://openiz.org/fhir/profile#address-CensusTract">http://openiz.org/fhir/profile#address-CensusTract</a>”<br>
+).valueString)</p></td>
+</tr>
+<tr class="row-even"><td><p>number_of_pregnancy</p></td>
+<td><p>$mother.extension.find(<br>
+e=&gt;e.url==”<a class="reference external" href="http://openiz.org/extensions/contrib/timr/pregnancyStatus/previousPregnancies">http://openiz.org/extensions/contrib/timr/pregnancyStatus/previousPregnancies</a>”<br>
+).valueDecimal</p></td>
+</tr>
+<tr class="row-odd"><td><p>number_of_children</p></td>
+<td><p>$mother.extension.find(<br>
+e=&gt;e.url==”<a class="reference external" href="http://openiz.org/extensions/contrib/timr/pregnancyStatus/previousPregnancies">http://openiz.org/extensions/contrib/timr/pregnancyStatus/previousPregnancies</a>”<br>
+).valueDecimal</p></td>
+</tr>
+<tr class="row-even"><td><p>number_of_children_safe_delivery</p></td>
+<td><p>$mother.extension.find(<br>
+e=&gt;e.url==”<a class="reference external" href="http://openiz.org/extensions/contrib/timr/pregnancyStatus/liveBirths">http://openiz.org/extensions/contrib/timr/pregnancyStatus/liveBirths</a>”<br>
+).valueDecimal</p></td>
+</tr>
+<tr class="row-odd"><td><p>number_death_before_delivery</p></td>
+<td><p>$mother.extension.find(<br>
+e=&gt;e.url==”<a class="reference external" href="http://openiz.org/extensions/contrib/timr/pregnancyStatus/preNatalDeaths">http://openiz.org/extensions/contrib/timr/pregnancyStatus/preNatalDeaths</a>”<br>
+).valueDecimal</p></td>
+</tr>
+<tr class="row-even"><td><p>month_of_pregnancy</p></td>
+<td><p>$mother.extension.find(<br>
+e=&gt;e.url==”<a class="reference external" href="http://openiz.org/extensions/contrib/timr/pregnancyStatus/monthsCaring">http://openiz.org/extensions/contrib/timr/pregnancyStatus/monthsCaring</a>”<br>
+).valueDecimal</p></td>
+</tr>
+<tr class="row-odd"><td><p>informant_first_name</p></td>
+<td><p>$informant.name[0].given[0]</p></td>
+</tr>
+<tr class="row-even"><td><p>informant_second_name</p></td>
+<td><p>$informant.name[0].given[1]</p></td>
+</tr>
+<tr class="row-odd"><td><p>informant_last_name</p></td>
+<td><p>$informant.name[0].family</p></td>
+</tr>
+<tr class="row-even"><td><p>informant_phone_number</p></td>
+<td><p>$informant.telecom.find(tel =&gt; tel.system == “phone”).value</p></td>
+</tr>
+<tr class="row-odd"><td><p>informant_national_identity_number</p></td>
+<td><p>$informant.identifier.find(id =&gt; id.system == “<a class="reference external" href="http://ivd.moh.go.tz/timr/nid">http://ivd.moh.go.tz/timr/nid</a>”).value</p></td>
+</tr>
+<tr class="row-even"><td><p>informant_relationship_id</p></td>
+<td><p>contained.find(c=&gt;c.id == $informant.id).relationship.coding[0].code</p></td>
+</tr>
+<tr class="row-odd"><td><p>informant_permanent_residence_village_id</p></td>
+<td><p>$informant.address.find(<br>
+addr =&gt; addr.extension.find(e=&gt;e.url == “<a class="reference external" href="http://openiz.org/fhir/profile#address-CensusTract">http://openiz.org/fhir/profile#address-CensusTract</a>”<br>
+).valueString)</p></td>
+</tr>
+<tr class="row-even"><td><p>date_of_informant</p></td>
+<td><p>$informant.meta.lastUpdated</p></td>
+</tr>
+<tr class="row-odd"><td><p>registration_centre_id</p></td>
+<td><p>extension.find(<br>
+e =&gt; e.url == “<a class="reference external" href="http://openiz.org/fhir/extension/rim/relationship/RegistrationFacility">http://openiz.org/fhir/extension/rim/relationship/RegistrationFacility</a>”<br>
+).valueIdentifier.value</p></td>
+</tr>
+<tr class="row-even"><td><p>register_date</p></td>
+<td><p>meta.lastUpdated</p></td>
+</tr>
+<tr class="row-odd"><td><p>updated_at</p></td>
+<td><p>meta.lastUpdated</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pending RITA Dataelements</strong></p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>birthStatus</p></li>
+<li><p>childWeight</p></li>
+<li><p>father_date_of_birth</p></li>
+<li><p>informant_phone_number</p></li>
+<li><p>registrar_first_name</p></li>
+<li><p>registrar_second_name</p></li>
+<li><p>registrar_last_name</p></li>
+</ol>
+</div></blockquote>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">TImR and RITA Sync Mediator</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installing The Mediator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuring The Mediator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="running.html">Running the mediator and logs location</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data synchronization - Tabular</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#below-are-the-data-elements-that-are-currently-being-sent-to-rita"><em>Below are the data elements that are currently being sent to RITA</em></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="synclist.html">Data synchronization - List</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="running.html" title="previous chapter">Running the mediator and logs location</a></li>
+      <li>Next: <a href="synclist.html" title="next chapter">Data synchronization - List</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Ally Shaban.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.3.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/sync.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

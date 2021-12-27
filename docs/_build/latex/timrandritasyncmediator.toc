@@ -1,0 +1,7 @@
+\babel@toc {english}{}
+\contentsline {chapter}{\numberline {1}Installing The Mediator}{1}{chapter.1}
+\contentsline {chapter}{\numberline {2}Configuring The Mediator}{3}{chapter.2}
+\contentsline {chapter}{\numberline {3}Running the mediator and logs location}{7}{chapter.3}
+\contentsline {chapter}{\numberline {4}Data synchronization \sphinxhyphen {} Tabular}{9}{chapter.4}
+\contentsline {section}{\numberline {4.1}\sphinxstyleemphasis {Below are the data elements that are currently being sent to RITA}}{9}{section.4.1}
+\contentsline {chapter}{\numberline {5}Data synchronization \sphinxhyphen {} List}{11}{chapter.5}
