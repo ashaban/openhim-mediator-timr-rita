@@ -6,7 +6,7 @@ const moment = require("moment")
 exports.buildOrchestration = (name, beforeTimestamp, method, url, requestContent, res, body) => {
   let uri = new URI(url)
   if (res == undefined || res == null || res == false) {
-    var statusCode = 503
+    var statusCode = 500
     var header = JSON.stringify({
       "response_header": "Empty Header Returned"
     })
