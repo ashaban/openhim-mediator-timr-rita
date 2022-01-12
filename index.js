@@ -115,7 +115,7 @@ function setupApp() {
     let errorOccured = false
     let auth = "Basic " + Buffer.from(nconf.get('rita:username') + ":" + nconf.get('rita:password')).toString("base64");
     let options = {
-      url: nconf.get('rita:username').toString(),
+      url: nconf.get('rita:url').toString(),
       headers: {
         'Content-Type': 'application/json',
         Authorization: auth

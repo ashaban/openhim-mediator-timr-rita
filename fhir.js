@@ -245,9 +245,6 @@ module.exports = {
             }
             if (Array.isArray(motherResource.extension)) {
               for (let ext of motherResource.extension) {
-                if (ext.url === 'http://openiz.org/extensions/contrib/timr/socialIndicators/education') {
-
-                }
                 if (ext.url === 'http://openiz.org/fhir/extension/rim/relationship/Birthplace') {
                   if (ext.valueIdentifier && ext.valueIdentifier.value) {
                     if (ext.valueIdentifier.value === "urn:uuid:ffab8c9d-a195-36f1-b018-51f6346e5a62") {
